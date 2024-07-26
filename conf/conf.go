@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/EbadiDev/Arch-Server/common/json5"
+	"github.com/InazumaV/V2bX/common/json5"
 
 	"github.com/goccy/go-json"
 )

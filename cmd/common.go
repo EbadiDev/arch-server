@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/EbadiDev/Arch-Server/common/exec"
+	"github.com/InazumaV/V2bX/common/exec"
 )
 
 const (
@@ -15,7 +15,7 @@ const (
 )
 
 func checkRunning() (bool, error) {
-	o, err := exec.RunCommandByShell("systemctl status Arch-Server | grep Active")
+	o, err := exec.RunCommandByShell("systemctl status V2bX | grep Active")
 	if err != nil {
 		return false, err
 	}

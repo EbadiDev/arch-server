@@ -9,7 +9,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/EbadiDev/Arch-Server/conf"
+	"github.com/InazumaV/V2bX/conf"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -23,6 +23,7 @@ type Client struct {
 	NodeId           int
 	nodeEtag         string
 	userEtag         string
+	responseBodyHash string
 	LastReportOnline map[int]int
 }
 

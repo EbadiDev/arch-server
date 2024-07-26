@@ -3,7 +3,7 @@ package node
 import (
 	"strconv"
 
-	"github.com/EbadiDev/Arch-Server/api/panel"
+	"github.com/InazumaV/V2bX/api/panel"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -58,6 +58,7 @@ func (c *Controller) reportUserTrafficTask() (err error) {
 		reportOnline := make(map[int]int)
 		data := make(map[int][]string)
 		for _, onlineuser := range result {
+			// json structure: { UID1:["ip1","ip2"],UID2:["ip3","ip4"] }
 			data[onlineuser.UID] = append(data[onlineuser.UID], onlineuser.IP)
 			if _, ok := reportOnline[onlineuser.UID]; ok {
 				reportOnline[onlineuser.UID]++

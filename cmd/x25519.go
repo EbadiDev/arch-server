@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/EbadiDev/Arch-Server/common/crypt"
+	"github.com/InazumaV/V2bX/common/crypt"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/curve25519"
@@ -33,17 +33,17 @@ func executeX25519() {
 	var privateKey []byte
 	var publicKey []byte
 	var yes, key string
-	fmt.Println("Do you want to generate a key based on the node information?(Y/n)")
+	fmt.Println("要基于节点信息生成密钥吗?(Y/n)")
 	fmt.Scan(&yes)
 	if strings.ToLower(yes) == "y" {
 		var temp string
-		fmt.Println("Please enter the node ID:")
+		fmt.Println("请输入节点id:")
 		fmt.Scan(&temp)
 		key = temp
-		fmt.Println("Please enter the node type:")
+		fmt.Println("请输入节点类型:")
 		fmt.Scan(&temp)
 		key += strings.ToLower(temp)
-		fmt.Println("Please enter the Token:")
+		fmt.Println("请输入Token:")
 		fmt.Scan(&temp)
 		key += temp
 		privateKey = crypt.GenX25519Private([]byte(key))

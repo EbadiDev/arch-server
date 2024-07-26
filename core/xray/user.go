@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/EbadiDev/Arch-Server/api/panel"
-	"github.com/EbadiDev/Arch-Server/common/format"
-	vCore "github.com/EbadiDev/Arch-Server/core"
+	"github.com/InazumaV/V2bX/api/panel"
+	"github.com/InazumaV/V2bX/common/format"
+	vCore "github.com/InazumaV/V2bX/core"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/proxy"
 )

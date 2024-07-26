@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/EbadiDev/Arch-Server/api/panel"
-	"github.com/EbadiDev/Arch-Server/common/task"
-	"github.com/EbadiDev/Arch-Server/conf"
-	vCore "github.com/EbadiDev/Arch-Server/core"
-	"github.com/EbadiDev/Arch-Server/limiter"
+	"github.com/InazumaV/V2bX/api/panel"
+	"github.com/InazumaV/V2bX/common/task"
+	"github.com/InazumaV/V2bX/conf"
+	vCore "github.com/InazumaV/V2bX/core"
+	"github.com/InazumaV/V2bX/limiter"
 	log "github.com/sirupsen/logrus"
 )
 

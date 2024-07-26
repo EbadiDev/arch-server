@@ -1,14 +1,14 @@
 package panel
 
 import (
-	"encoding/base64"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/EbadiDev/Arch-Server/common/crypt"
 	"github.com/goccy/go-json"
 )
 
@@ -78,7 +78,7 @@ type TlsSettings struct {
 	ServerPort string `json:"server_port"`
 	ShortId    string `json:"short_id"`
 	PrivateKey string `json:"private_key"`
-	Xver       uint8  `json:"xver,string"`
+	Xver       uint64 `json:"xver,string"`
 }
 
 type RealityConfig struct {
@@ -126,11 +126,23 @@ type Rules struct {
 }
 
 func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
-	const path = "/api/v1/server/Aiko/config"
+	const path = "/api/v1/server/UniProxy/config"
 	r, err := c.client.
 		R().
 		SetHeader("If-None-Match", c.nodeEtag).
+		ForceContentType("application/json").
 		Get(path)
+
+	if r.StatusCode() == 304 {
+		return nil, nil
+	}
+	hash := sha256.Sum256(r.Body())
+	newBodyHash := hex.EncodeToString(hash[:])
+	if c.responseBodyHash == newBodyHash {
+		return nil, nil
+	}
+	c.responseBodyHash = newBodyHash
+	c.nodeEtag = r.Header().Get("ETag")
 	if err = c.checkResponse(r, path, err); err != nil {
 		return nil, err
 	}
@@ -141,9 +153,6 @@ func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
 				r.RawBody().Close()
 			}
 		}()
-		if r.StatusCode() == 304 {
-			return nil, nil
-		}
 	} else {
 		return nil, fmt.Errorf("received nil response")
 	}
@@ -175,18 +184,6 @@ func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
 		cm = &rsp.CommonNode
 		node.VAllss = rsp
 		node.Security = node.VAllss.Tls
-		if len(rsp.NetworkSettings) > 0 {
-			err = json.Unmarshal(rsp.NetworkSettings, &rsp.RealityConfig)
-			if err != nil {
-				return nil, fmt.Errorf("decode reality config error: %s", err)
-			}
-		}
-		if node.Security == Reality {
-			if rsp.TlsSettings.PrivateKey == "" {
-				key := crypt.GenX25519Private([]byte("vless" + c.Token))
-				rsp.TlsSettings.PrivateKey = base64.RawURLEncoding.EncodeToString(key)
-			}
-		}
 	case "shadowsocks":
 		rsp := &ShadowsocksNode{}
 		err = json.Unmarshal(r.Body(), rsp)
@@ -274,8 +271,7 @@ func (c *Client) GetNodeInfo() (node *NodeInfo, err error) {
 	cm.Routes = nil
 	cm.BaseConfig = nil
 
-	c.nodeEtag = r.Header().Get("ETag")
-	return
+	return node, nil
 }
 
 func intervalToTime(i interface{}) time.Duration {

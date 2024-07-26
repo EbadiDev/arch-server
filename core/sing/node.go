@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/EbadiDev/Arch-Server/api/panel"
-	"github.com/EbadiDev/Arch-Server/conf"
+	"github.com/InazumaV/V2bX/api/panel"
+	"github.com/InazumaV/V2bX/conf"
 	"github.com/goccy/go-json"
 	"github.com/sagernet/sing-box/inbound"
 	"github.com/sagernet/sing-box/option"
@@ -38,6 +38,15 @@ type HttpRequest struct {
 type WsNetworkConfig struct {
 	Path    string            `json:"path"`
 	Headers map[string]string `json:"headers"`
+}
+
+type GrpcNetworkConfig struct {
+	ServiceName string `json:"serviceName"`
+}
+
+type HttpupgradeNetworkConfig struct {
+	Path string `json:"path"`
+	Host string `json:"host"`
 }
 
 func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (option.Inbound, error) {
@@ -91,7 +100,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 			Enabled:    true,
 			ShortID:    []string{v.TlsSettings.ShortId},
 			PrivateKey: v.TlsSettings.PrivateKey,
-			Xver:       v.TlsSettings.Xver,
+			Xver:       uint8(v.TlsSettings.Xver),
 			Handshake: option.InboundRealityHandshakeOptions{
 				ServerOptions: option.ServerOptions{
 					Server:     dest,
@@ -170,11 +179,27 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 				Headers:             headers,
 			}
 		case "grpc":
+			network := GrpcNetworkConfig{}
 			if len(n.NetworkSettings) != 0 {
-				err := json.Unmarshal(n.NetworkSettings, &t.GRPCOptions)
+				err := json.Unmarshal(n.NetworkSettings, &network)
 				if err != nil {
 					return option.Inbound{}, fmt.Errorf("decode NetworkSettings error: %s", err)
 				}
+			}
+			t.GRPCOptions = option.V2RayGRPCOptions{
+				ServiceName: network.ServiceName,
+			}
+		case "httpupgrade":
+			network := HttpupgradeNetworkConfig{}
+			if len(n.NetworkSettings) != 0 {
+				err := json.Unmarshal(n.NetworkSettings, &network)
+				if err != nil {
+					return option.Inbound{}, fmt.Errorf("decode NetworkSettings error: %s", err)
+				}
+			}
+			t.HTTPUpgradeOptions = option.V2RayHTTPUpgradeOptions{
+				Path: network.Path,
+				Host: network.Host,
 			}
 		}
 		if info.Type == "vless" {
@@ -203,7 +228,7 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 		switch n.Cipher {
 		case "2022-blake3-aes-128-gcm":
 			keyLength = 16
-		case "2022-blake3-aes-256-gcm":
+		case "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305":
 			keyLength = 32
 		default:
 			keyLength = 16
@@ -263,11 +288,15 @@ func getInboundOptions(tag string, info *panel.NodeInfo, c *conf.Options) (optio
 				Headers:             headers,
 			}
 		case "grpc":
+			network := GrpcNetworkConfig{}
 			if len(n.NetworkSettings) != 0 {
-				err := json.Unmarshal(n.NetworkSettings, &t.GRPCOptions)
+				err := json.Unmarshal(n.NetworkSettings, &network)
 				if err != nil {
 					return option.Inbound{}, fmt.Errorf("decode NetworkSettings error: %s", err)
 				}
+			}
+			t.GRPCOptions = option.V2RayGRPCOptions{
+				ServiceName: network.ServiceName,
 			}
 		default:
 			t.Type = ""
@@ -348,6 +377,7 @@ func (b *Sing) AddNode(tag string, info *panel.NodeInfo, config *conf.Options) e
 		b.ctx,
 		b.box.Router(),
 		b.logFactory.NewLogger(F.ToString("inbound/", c.Type, "[", tag, "]")),
+		tag,
 		c,
 		nil,
 	)

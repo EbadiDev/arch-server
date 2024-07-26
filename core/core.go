@@ -3,7 +3,7 @@ package core
 import (
 	"errors"
 
-	"github.com/EbadiDev/Arch-Server/conf"
+	"github.com/InazumaV/V2bX/conf"
 )
 
 var (

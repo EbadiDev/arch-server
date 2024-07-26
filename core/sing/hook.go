@@ -8,17 +8,23 @@ import (
 
 	"github.com/sagernet/sing-box/common/urltest"
 
-	"github.com/EbadiDev/Arch-Server/common/rate"
+	"github.com/InazumaV/V2bX/common/format"
+	"github.com/InazumaV/V2bX/common/rate"
 
-	"github.com/EbadiDev/Arch-Server/limiter"
+	"github.com/InazumaV/V2bX/limiter"
 
-	"github.com/EbadiDev/Arch-Server/common/counter"
+	"github.com/InazumaV/V2bX/common/counter"
 	"github.com/sagernet/sing-box/adapter"
 	"github.com/sagernet/sing-box/log"
 	N "github.com/sagernet/sing/common/network"
+	"github.com/sagernet/sing/service"
 )
 
+var _ adapter.ClashServer = (*HookServer)(nil)
+
 type HookServer struct {
+	ctx             context.Context
+	urlTestHistory  *urltest.HistoryStorage
 	EnableConnClear bool
 	counter         sync.Map
 	connClears      sync.Map
@@ -55,12 +61,18 @@ func (h *HookServer) ModeList() []string {
 	return nil
 }
 
-func NewHookServer(enableClear bool) *HookServer {
-	return &HookServer{
+func NewHookServer(ctx context.Context, enableClear bool) *HookServer {
+	server := &HookServer{
+		ctx:             ctx,
 		EnableConnClear: enableClear,
 		counter:         sync.Map{},
 		connClears:      sync.Map{},
 	}
+	server.urlTestHistory = service.PtrFromContext[urltest.HistoryStorage](ctx)
+	if server.urlTestHistory == nil {
+		server.urlTestHistory = urltest.NewHistoryStorage()
+	}
+	return server
 }
 
 func (h *HookServer) Start() error {
@@ -68,6 +80,7 @@ func (h *HookServer) Start() error {
 }
 
 func (h *HookServer) Close() error {
+	h.urlTestHistory.Close()
 	return nil
 }
 
@@ -95,7 +108,7 @@ func (h *HookServer) RoutedConnection(_ context.Context, conn net.Conn, m adapte
 		return conn, t
 	}
 	ip := m.Source.Addr.String()
-	if b, r := l.CheckLimit(m.User, ip, true); r {
+	if b, r := l.CheckLimit(format.UserTag(m.Inbound, m.User), ip, true, true); r {
 		conn.Close()
 		log.Error("[", m.Inbound, "] ", "Limited ", m.User, " by ip or conn")
 		return conn, t
@@ -149,7 +162,7 @@ func (h *HookServer) RoutedPacketConnection(_ context.Context, conn N.PacketConn
 		return conn, t
 	}
 	ip := m.Source.Addr.String()
-	if b, r := l.CheckLimit(m.User, ip, true); r {
+	if b, r := l.CheckLimit(format.UserTag(m.Inbound, m.User), ip, true, false); r {
 		conn.Close()
 		log.Error("[", m.Inbound, "] ", "Limited ", m.User, " by ip or conn")
 		return conn, t
@@ -192,7 +205,7 @@ func (h *HookServer) CacheFile() adapter.CacheFile {
 	return nil
 }
 func (h *HookServer) HistoryStorage() *urltest.HistoryStorage {
-	return nil
+	return h.urlTestHistory
 }
 
 func (h *HookServer) StoreFakeIP() bool {

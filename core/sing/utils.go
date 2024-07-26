@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/EbadiDev/Arch-Server/conf"
+	"github.com/InazumaV/V2bX/conf"
 	"github.com/sagernet/sing-box/option"
 )
 

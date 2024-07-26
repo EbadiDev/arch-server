@@ -19,8 +19,8 @@ import (
 	"github.com/go-acme/lego/v4/registration"
 	"github.com/goccy/go-json"
 
-	"github.com/EbadiDev/Arch-Server/common/file"
-	"github.com/EbadiDev/Arch-Server/conf"
+	"github.com/InazumaV/V2bX/common/file"
+	"github.com/InazumaV/V2bX/conf"
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/lego"
 )

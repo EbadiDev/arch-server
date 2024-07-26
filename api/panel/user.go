@@ -26,7 +26,7 @@ type UserListBody struct {
 
 // GetUserList will pull user form sspanel
 func (c *Client) GetUserList() (UserList []UserInfo, err error) {
-	const path = "/api/v1/server/Aiko/user"
+	const path = "/api/v1/server/UniProxy/user"
 	r, err := c.client.R().
 		SetHeader("If-None-Match", c.userEtag).
 		ForceContentType("application/json").
@@ -57,7 +57,7 @@ func (c *Client) GetUserList() (UserList []UserInfo, err error) {
 	c.userEtag = r.Header().Get("ETag")
 
 	var userinfos []UserInfo
-	var localDeviceLimit int = 0
+	var deviceLimit, localDeviceLimit int = 0, 0
 	for _, user := range userList.Users {
 		// If there is still device available, add the user
 		if user.DeviceLimit > 0 && user.AliveIp > 0 {
@@ -68,13 +68,14 @@ func (c *Client) GetUserList() (UserList []UserInfo, err error) {
 			// If there are any available device.
 			localDeviceLimit = user.DeviceLimit - user.AliveIp + lastOnline
 			if localDeviceLimit > 0 {
-
+				deviceLimit = localDeviceLimit
 			} else if lastOnline > 0 {
-
+				deviceLimit = lastOnline
 			} else {
 				continue
 			}
 		}
+		user.DeviceLimit = deviceLimit
 		userinfos = append(userinfos, user)
 	}
 
@@ -93,7 +94,7 @@ func (c *Client) ReportUserTraffic(userTraffic []UserTraffic) error {
 	for i := range userTraffic {
 		data[userTraffic[i].UID] = []int64{userTraffic[i].Upload, userTraffic[i].Download}
 	}
-	const path = "/api/v1/server/Aiko/push"
+	const path = "/api/v1/server/UniProxy/push"
 	r, err := c.client.R().
 		SetBody(data).
 		ForceContentType("application/json").
@@ -107,7 +108,7 @@ func (c *Client) ReportUserTraffic(userTraffic []UserTraffic) error {
 
 func (c *Client) ReportNodeOnlineUsers(data *map[int][]string, reportOnline *map[int]int) error {
 	c.LastReportOnline = *reportOnline
-	const path = "/api/v1/server/Aiko/alive"
+	const path = "/api/v1/server/UniProxy/alive"
 	r, err := c.client.R().
 		SetBody(data).
 		ForceContentType("application/json").

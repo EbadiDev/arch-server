@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/EbadiDev/Arch-Server/api/panel"
-	"github.com/EbadiDev/Arch-Server/conf"
+	"github.com/InazumaV/V2bX/api/panel"
+	"github.com/InazumaV/V2bX/conf"
 	"github.com/goccy/go-json"
 	"github.com/xtls/xray-core/common/net"
 	"github.com/xtls/xray-core/core"
@@ -26,8 +26,12 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 		err = buildV2ray(option, nodeInfo, in)
 		network = nodeInfo.VAllss.Network
 	case "trojan":
-		err = buildTrojan(option, in)
-		network = "tcp"
+		err = buildTrojan(option, nodeInfo, in)
+		if nodeInfo.Trojan.Network != "" {
+			network = nodeInfo.Trojan.Network
+		} else {
+			network = "tcp"
+		}
 	case "shadowsocks":
 		err = buildShadowsocks(option, nodeInfo, in)
 		network = "tcp"
@@ -69,8 +73,13 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 			in.StreamSetting.TCPSettings = tcpSetting
 		}
 	case "ws":
-		in.StreamSetting.WSSettings = &coreConf.WebSocketConfig{
-			AcceptProxyProtocol: option.XrayOptions.EnableProxyProtocol} //Enable proxy protocol
+		if in.StreamSetting.WSSettings != nil {
+			in.StreamSetting.WSSettings.AcceptProxyProtocol = option.XrayOptions.EnableProxyProtocol
+		} else {
+			in.StreamSetting.WSSettings = &coreConf.WebSocketConfig{
+				AcceptProxyProtocol: option.XrayOptions.EnableProxyProtocol,
+			} //Enable proxy protocol
+		}
 	default:
 		socketConfig := &coreConf.SocketConfig{
 			AcceptProxyProtocol: option.XrayOptions.EnableProxyProtocol,
@@ -105,9 +114,17 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 		// Reality
 		in.StreamSetting.Security = "reality"
 		v := nodeInfo.VAllss
+		dest := v.TlsSettings.Dest
+		if dest == "" {
+			dest = v.TlsSettings.ServerName
+		}
+		xver := v.TlsSettings.Xver
+		if xver == 0 {
+			xver = v.RealityConfig.Xver
+		}
 		d, err := json.Marshal(fmt.Sprintf(
 			"%s:%s",
-			v.TlsSettings.ServerName,
+			dest,
 			v.TlsSettings.ServerPort))
 		if err != nil {
 			return nil, fmt.Errorf("marshal reality dest error: %s", err)
@@ -115,7 +132,7 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 		mtd, _ := time.ParseDuration(v.RealityConfig.MaxTimeDiff)
 		in.StreamSetting.REALITYSettings = &coreConf.REALITYConfig{
 			Dest:         d,
-			Xver:         v.RealityConfig.Xver,
+			Xver:         xver,
 			ServerNames:  []string{v.TlsSettings.ServerName},
 			PrivateKey:   v.TlsSettings.PrivateKey,
 			MinClientVer: v.RealityConfig.MinClientVer,
@@ -123,6 +140,7 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 			MaxTimeDiff:  uint64(mtd.Microseconds()),
 			ShortIds:     []string{v.TlsSettings.ShortId},
 		}
+	default:
 		break
 	}
 	in.Tag = tag
@@ -172,9 +190,77 @@ func buildV2ray(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreCon
 		return nil
 	}
 
-	t := coreConf.TransportProtocol(nodeInfo.VAllss.Network)
+	t := coreConf.TransportProtocol(v.Network)
 	inbound.StreamSetting = &coreConf.StreamConfig{Network: &t}
 	switch v.Network {
+	case "tcp":
+		err := json.Unmarshal(v.NetworkSettings, &inbound.StreamSetting.TCPSettings)
+		if err != nil {
+			return fmt.Errorf("unmarshal tcp settings error: %s", err)
+		}
+	case "ws":
+		err := json.Unmarshal(v.NetworkSettings, &inbound.StreamSetting.WSSettings)
+		if err != nil {
+			return fmt.Errorf("unmarshal ws settings error: %s", err)
+		}
+	case "grpc":
+		err := json.Unmarshal(v.NetworkSettings, &inbound.StreamSetting.GRPCConfig)
+		if err != nil {
+			return fmt.Errorf("unmarshal grpc settings error: %s", err)
+		}
+	case "http":
+		err := json.Unmarshal(v.NetworkSettings, &inbound.StreamSetting.HTTPSettings)
+		if err != nil {
+			return fmt.Errorf("unmarshal grpc settings error: %s", err)
+		}
+	case "quic":
+		err := json.Unmarshal(v.NetworkSettings, &inbound.StreamSetting.QUICSettings)
+		if err != nil {
+			return fmt.Errorf("unmarshal grpc settings error: %s", err)
+		}
+	case "httpupgrade":
+		err := json.Unmarshal(v.NetworkSettings, &inbound.StreamSetting.HTTPUPGRADESettings)
+		if err != nil {
+			return fmt.Errorf("unmarshal httpupgrade settings error: %s", err)
+		}
+	case "splithttp":
+		err := json.Unmarshal(v.NetworkSettings, &inbound.StreamSetting.SplitHTTPSettings)
+		if err != nil {
+			return fmt.Errorf("unmarshal splithttp settings error: %s", err)
+		}
+	default:
+		return errors.New("the network type is not vail")
+	}
+	return nil
+}
+
+func buildTrojan(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreConf.InboundDetourConfig) error {
+	inbound.Protocol = "trojan"
+	v := nodeInfo.Trojan
+	if config.XrayOptions.EnableFallback {
+		// Set fallback
+		fallbackConfigs, err := buildTrojanFallbacks(config.XrayOptions.FallBackConfigs)
+		if err != nil {
+			return err
+		}
+		s, err := json.Marshal(&coreConf.TrojanServerConfig{
+			Fallbacks: fallbackConfigs,
+		})
+		inbound.Settings = (*json.RawMessage)(&s)
+		if err != nil {
+			return fmt.Errorf("marshal trojan fallback config error: %s", err)
+		}
+	} else {
+		s := []byte("{}")
+		inbound.Settings = (*json.RawMessage)(&s)
+	}
+	network := v.Network
+	if network == "" {
+		network = "tcp"
+	}
+	t := coreConf.TransportProtocol(network)
+	inbound.StreamSetting = &coreConf.StreamConfig{Network: &t}
+	switch network {
 	case "tcp":
 		err := json.Unmarshal(v.NetworkSettings, &inbound.StreamSetting.TCPSettings)
 		if err != nil {
@@ -193,30 +279,6 @@ func buildV2ray(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreCon
 	default:
 		return errors.New("the network type is not vail")
 	}
-	return nil
-}
-
-func buildTrojan(config *conf.Options, inbound *coreConf.InboundDetourConfig) error {
-	inbound.Protocol = "trojan"
-	if config.XrayOptions.EnableFallback {
-		// Set fallback
-		fallbackConfigs, err := buildTrojanFallbacks(config.XrayOptions.FallBackConfigs)
-		if err != nil {
-			return err
-		}
-		s, err := json.Marshal(&coreConf.TrojanServerConfig{
-			Fallbacks: fallbackConfigs,
-		})
-		inbound.Settings = (*json.RawMessage)(&s)
-		if err != nil {
-			return fmt.Errorf("marshal trojan fallback config error: %s", err)
-		}
-	} else {
-		s := []byte("{}")
-		inbound.Settings = (*json.RawMessage)(&s)
-	}
-	t := coreConf.TransportProtocol("tcp")
-	inbound.StreamSetting = &coreConf.StreamConfig{Network: &t}
 	return nil
 }
 
