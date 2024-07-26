@@ -1,21 +1,21 @@
 # Arch-Server
 
-Aiko Server For AikoPanel
+Arch Server For Testing 
 
-<p align="center"><img src="https://avatars.githubusercontent.com/u/91626055?v=4" width="128" /></p>
+<!-- <p align="center"><img src="https://avatars.githubusercontent.com/u/91626055?v=4" width="128" /></p> -->
 
-<div align="center">
+<!-- <div align="center"> -->
 
-[![](https://img.shields.io/github/downloads/EbadiDev/Arch-Server/total.svg?style=flat-square)](https://github.com/EbadiDev/Arch-Server/releases)
-[![](https://img.shields.io/github/v/release/EbadiDev/Arch-Server?style=flat-square)](https://github.com/EbadiDev/Arch-Server/releases)
+<!-- [![](https://img.shields.io/github/downloads/EbadiDev/Arch-Server/total.svg?style=flat-square)](https://github.com/EbadiDev/Arch-Server/releases) -->
+<!-- [![](https://img.shields.io/github/v/release/EbadiDev/Arch-Server?style=flat-square)](https://github.com/EbadiDev/Arch-Server/releases)
 [![docker](https://img.shields.io/docker/v/aikocute/Arch-Server?label=Docker%20image&sort=semver)](https://hub.docker.com/r/aikocute/Arch-Server)
-[![Go-Report](https://goreportcard.com/badge/github.com/EbadiDev/Arch-Server?style=flat-square)](https://goreportcard.com/report/github.com/EbadiDev/Arch-Server)
+[![Go-Report](https://goreportcard.com/badge/github.com/EbadiDev/Arch-Server?style=flat-square)](https://goreportcard.com/report/github.com/EbadiDev/Arch-Server) -->
 
 </div>
 
 # Description of Arch-Server
 
-Arch-Server Supports for AikoPanel
+<!-- Arch-Server Supports for AikoPanel -->
 
 An Xray-based back-end framework, supporting V2ay, Trojan, Shadowsocks protocols, extremely easily extensible and supporting multi-panel connection。
 
@@ -61,24 +61,24 @@ This project is for my personal learning, development and maintenance only, I do
 
 ## Software installation - release
 
-```
+<!-- ```
 wget --no-check-certificate -O install.sh https://raw.githubusercontent.com/AikoPanel/Arch-Server-Script/master/install_v2.sh && bash install.sh
-```
+``` -->
 
 ### Docker installation
 
-```
+<!-- ```
 docker pull aikocute/Arch-Server:latest && docker run --restart=always --name Arch-Server -d -v ${PATCH_TO_CONFIG}/aiko.json:/etc/Arch-Server/aiko.json --network=host aikocute/Arch-Server:latest
-```
+``` -->
 
 ### Docker-compose installation
 
-Step 1 : Create Config File `aiko.json` in `/etc/Arch-Server/aiko.json`
+<!-- Step 1 : Create Config File `aiko.json` in `/etc/Arch-Server/aiko.json`
 
 ```
 mkdir -p /etc/Arch-Server/config && cd /etc/Arch-Server/config && wget https://raw.githubusercontent.com/EbadiDev/Arch-Server-Script/master/aiko.json
-```
-
+``` -->
+<!-- 
 Step 2 : Create `docker-compose.yml` in `/etc/Arch-Server/docker-compose.yml`
 
 ```
@@ -89,12 +89,12 @@ Step 3 : Run `docker-compose up -d` in `/etc/Arch-Server/`
 
 ```
 cd /etc/Arch-Server/ && docker-compose up -d
-```
+``` -->
 
 ## Telgram
 
-[Tele Aiko](https://t.me/Tele_Aiko)
+<!-- [Tele Aiko](https://t.me/Tele_Aiko) -->
 
-## Stargazers over time
+<!-- ## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/EbadiDev/Arch-Server.svg)](https://starchart.cc/EbadiDev/Arch-Server)
+[![Stargazers over time](https://starchart.cc/EbadiDev/Arch-Server.svg)](https://starchart.cc/EbadiDev/Arch-Server) -->
