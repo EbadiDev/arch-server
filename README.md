@@ -17,7 +17,7 @@ Arch Server For Testing
 
 <!-- Arch-Server Supports for AikoPanel -->
 
-An Xray-based back-end framework, supporting V2ay, Trojan, Shadowsocks protocols, extremely easily extensible and supporting multi-panel connection。
+An Xray-based and SingBox-based back-end framework, supporting V2ay, Trojan, Shadowsocks protocols, extremely easily extensible and supporting multi-panel connection。
 
 If you like this project, you can click the star + view in the upper right corner to track the progress of this project.
 
