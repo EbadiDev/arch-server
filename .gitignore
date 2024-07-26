@@ -1,0 +1,15 @@
+release/config.yml
+release/main
+release/XrayR
+release/XrayR*
+release/mytest
+release/access.logo
+release/error.log
+api/chooseparser.go.bak
+app/Inboundbuilder/.lego/
+app/legocmd/.lego/
+.vscode/launch.json
+release/.lego
+release/cert
+./vscode
+.idea/*
