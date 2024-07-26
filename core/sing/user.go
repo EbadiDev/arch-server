@@ -4,9 +4,9 @@ import (
 	"encoding/base64"
 	"errors"
 
-	"github.com/InazumaV/V2bX/api/panel"
-	"github.com/InazumaV/V2bX/common/counter"
-	"github.com/InazumaV/V2bX/core"
+	"github.com/EbadiDev/Arch-Server/api/panel"
+	"github.com/EbadiDev/Arch-Server/common/counter"
+	"github.com/EbadiDev/Arch-Server/core"
 	"github.com/sagernet/sing-box/inbound"
 	"github.com/sagernet/sing-box/option"
 )

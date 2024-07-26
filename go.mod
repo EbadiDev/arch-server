@@ -1,4 +1,4 @@
-module github.com/InazumaV/V2bX
+module github.com/EbadiDev/Arch-Server
 
 go 1.22
 

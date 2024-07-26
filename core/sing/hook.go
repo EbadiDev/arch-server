@@ -8,12 +8,12 @@ import (
 
 	"github.com/sagernet/sing-box/common/urltest"
 
-	"github.com/InazumaV/V2bX/common/format"
-	"github.com/InazumaV/V2bX/common/rate"
+	"github.com/EbadiDev/Arch-Server/common/format"
+	"github.com/EbadiDev/Arch-Server/common/rate"
 
-	"github.com/InazumaV/V2bX/limiter"
+	"github.com/EbadiDev/Arch-Server/limiter"
 
-	"github.com/InazumaV/V2bX/common/counter"
+	"github.com/EbadiDev/Arch-Server/common/counter"
 	"github.com/sagernet/sing-box/adapter"
 	"github.com/sagernet/sing-box/log"
 	N "github.com/sagernet/sing/common/network"

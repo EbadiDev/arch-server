@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/InazumaV/V2bX/api/panel"
-	"github.com/InazumaV/V2bX/conf"
+	"github.com/EbadiDev/Arch-Server/api/panel"
+	"github.com/EbadiDev/Arch-Server/conf"
 )
 
 type Selector struct {

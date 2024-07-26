@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/InazumaV/V2bX/api/panel"
-	"github.com/InazumaV/V2bX/common/format"
-	"github.com/InazumaV/V2bX/conf"
+	"github.com/EbadiDev/Arch-Server/api/panel"
+	"github.com/EbadiDev/Arch-Server/common/format"
+	"github.com/EbadiDev/Arch-Server/conf"
 	"github.com/juju/ratelimit"
 	log "github.com/sirupsen/logrus"
 	"github.com/xtls/xray-core/common/task"

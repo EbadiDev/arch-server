@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/InazumaV/V2bX/common/rate"
-	"github.com/InazumaV/V2bX/limiter"
+	"github.com/EbadiDev/Arch-Server/common/rate"
+	"github.com/EbadiDev/Arch-Server/limiter"
 
 	"github.com/xtls/xray-core/common"
 	"github.com/xtls/xray-core/common/buf"

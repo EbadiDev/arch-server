@@ -3,10 +3,10 @@ package node
 import (
 	"time"
 
-	"github.com/InazumaV/V2bX/api/panel"
-	"github.com/InazumaV/V2bX/common/task"
-	vCore "github.com/InazumaV/V2bX/core"
-	"github.com/InazumaV/V2bX/limiter"
+	"github.com/EbadiDev/Arch-Server/api/panel"
+	"github.com/EbadiDev/Arch-Server/common/task"
+	vCore "github.com/EbadiDev/Arch-Server/core"
+	"github.com/EbadiDev/Arch-Server/limiter"
 	log "github.com/sirupsen/logrus"
 )
 

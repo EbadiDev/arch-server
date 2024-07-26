@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/InazumaV/V2bX/conf"
+	"github.com/EbadiDev/Arch-Server/conf"
 )
 
 var l *Lego

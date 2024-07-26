@@ -6,10 +6,10 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/InazumaV/V2bX/conf"
-	vCore "github.com/InazumaV/V2bX/core"
-	"github.com/InazumaV/V2bX/limiter"
-	"github.com/InazumaV/V2bX/node"
+	"github.com/EbadiDev/Arch-Server/conf"
+	vCore "github.com/EbadiDev/Arch-Server/core"
+	"github.com/EbadiDev/Arch-Server/limiter"
+	"github.com/EbadiDev/Arch-Server/node"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -22,7 +22,7 @@ var (
 
 var serverCommand = cobra.Command{
 	Use:   "server",
-	Short: "Run V2bX server",
+	Short: "Run Arch-Server server",
 	Run:   serverHandle,
 	Args:  cobra.NoArgs,
 }
@@ -30,7 +30,7 @@ var serverCommand = cobra.Command{
 func init() {
 	serverCommand.PersistentFlags().
 		StringVarP(&config, "config", "c",
-			"/etc/V2bX/config.json", "config file path")
+			"/etc/Arch-Server/config.json", "config file path")
 	serverCommand.PersistentFlags().
 		BoolVarP(&watch, "watch", "w",
 			true, "watch file path change")
@@ -66,7 +66,7 @@ func serverHandle(_ *cobra.Command, _ []string) {
 		log.SetOutput(w)
 	}
 	limiter.Init()
-	log.Info("Start V2bX...")
+	log.Info("Start Arch-Server...")
 	vc, err := vCore.NewCore(c.CoresConfig)
 	if err != nil {
 		log.WithField("err", err).Error("new core failed")

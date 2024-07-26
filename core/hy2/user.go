@@ -4,20 +4,20 @@ import (
 	"net"
 	"sync"
 
-	"github.com/InazumaV/V2bX/api/panel"
-	"github.com/InazumaV/V2bX/common/counter"
-	vCore "github.com/InazumaV/V2bX/core"
+	"github.com/EbadiDev/Arch-Server/api/panel"
+	"github.com/EbadiDev/Arch-Server/common/counter"
+	vCore "github.com/EbadiDev/Arch-Server/core"
 	"github.com/apernet/hysteria/core/v2/server"
 )
 
-var _ server.Authenticator = &V2bX{}
+var _ server.Authenticator = &Arch-Server{}
 
-type V2bX struct {
+type Arch-Server struct {
 	usersMap map[string]int
 	mutex    sync.Mutex
 }
 
-func (v *V2bX) Authenticate(addr net.Addr, auth string, tx uint64) (ok bool, id string) {
+func (v *Arch-Server) Authenticate(addr net.Addr, auth string, tx uint64) (ok bool, id string) {
 	v.mutex.Lock()
 	defer v.mutex.Unlock()
 	if _, exists := v.usersMap[auth]; exists {

@@ -3,7 +3,7 @@ package xray
 import (
 	"fmt"
 
-	conf2 "github.com/InazumaV/V2bX/conf"
+	conf2 "github.com/EbadiDev/Arch-Server/conf"
 	"github.com/goccy/go-json"
 	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/infra/conf"

@@ -3,9 +3,9 @@ package hy2
 import (
 	"sync"
 
-	"github.com/InazumaV/V2bX/common/counter"
-	"github.com/InazumaV/V2bX/common/format"
-	"github.com/InazumaV/V2bX/limiter"
+	"github.com/EbadiDev/Arch-Server/common/counter"
+	"github.com/EbadiDev/Arch-Server/common/format"
+	"github.com/EbadiDev/Arch-Server/limiter"
 	"go.uber.org/zap"
 )
 
